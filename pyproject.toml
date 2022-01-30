@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "insta-receipt"
+version = "0.1.0"
+description = ""
+authors = ["Navbryce <plunkett.bryce.m@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-dotenv = "^0.19.2"
+google-api-python-client = "^2.36.0"
+google-auth-httplib2 = "^0.1.0"
+google-auth-oauthlib = "^0.4.6"
+Sheets = "^0.6"
+beautifulsoup4 = "^4.10.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
