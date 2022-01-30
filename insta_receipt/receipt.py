@@ -24,4 +24,6 @@ class Receipt:
 
     @property
     def total(self) -> float:
-        return self.subtotal + self.tax + self.tip + self.service_fee + self.total_refunds
+        return (
+            self.subtotal + self.tax + self.tip + self.service_fee + self.total_refunds
+        )

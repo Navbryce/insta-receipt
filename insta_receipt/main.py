@@ -9,10 +9,15 @@ from insta_receipt.receipt_parser import ReceiptParser
 def main():
     if len(sys.argv) < 2:
         print("Provide receipt path")
-    with open(sys.argv[1], 'r') as f:
+    with open(sys.argv[1], "r") as f:
         receipt = ReceiptParser().parse(f)
 
-    print(GoogleReceiptWriter(spreadsheets_service=service.get_sheets_service().spreadsheets()).write_receipt(receipt))
+    print(
+        GoogleReceiptWriter(
+            spreadsheets_service=service.get_sheets_service().spreadsheets()
+        ).write_receipt(receipt)
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

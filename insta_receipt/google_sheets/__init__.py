@@ -21,13 +21,20 @@ class CellData:
 
     userEnteredValue: ExtendedValue
 
+
 CellTypes = Union[CellData, str, float]
+
 
 @dataclass
 class RowData:
     @staticmethod
     def from_list(data: [CellTypes]) -> RowData:
-        return RowData(values=[value if isinstance(value, CellData) else CellData.from_value(value) for value in data])
+        return RowData(
+            values=[
+                value if isinstance(value, CellData) else CellData.from_value(value)
+                for value in data
+            ]
+        )
 
     values: [CellData]
 
@@ -36,9 +43,7 @@ class RowData:
 class GridData:
     @staticmethod
     def from_list(data: [[CellTypes]]) -> GridData:
-        return GridData(
-            rowData=[RowData.from_list(row) for row in data]
-        )
+        return GridData(rowData=[RowData.from_list(row) for row in data])
 
     startRow = 0
     startColumn = 0
