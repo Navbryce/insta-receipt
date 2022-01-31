@@ -7,6 +7,3 @@ repos:
     rev: 3.9.2
     hooks:
     - id: flake8
-
-https://gitlab:
-    com/pycqa/flake8/-/tree/master:

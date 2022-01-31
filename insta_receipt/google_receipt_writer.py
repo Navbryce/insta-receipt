@@ -18,6 +18,7 @@ class GoogleReceiptWriter:
         pass
 
     def write_receipt(self, receipt: Receipt) -> str:
+        # TODO: Fix protected ranges for templates
         template_sheets = self.__load_template_sheets(TEMPLATE_PATH)
         return self.__write_spreadsheet(
             Spreadsheet(
@@ -38,7 +39,9 @@ class GoogleReceiptWriter:
         return Sheet(properties=template["properties"], data=GridData.from_list(rows))
 
     def __build_refunds_sheet(self, template: Sheet, refunds: [float]) -> Sheet:
-        rows = [["Refunds", "Person"]] + [["", value] for value in refunds]
+        rows = [["Item", "Refund", "Person"]] + [
+            [item.name, item.cost, ""] for item in refunds
+        ]
         return Sheet(properties=template["properties"], data=GridData.from_list(rows))
 
     def __build_charges_sheet(self, template: Sheet, receipt: Receipt) -> Sheet:

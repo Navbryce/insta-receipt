@@ -26,7 +26,7 @@ class ReceiptParser:
 
     @staticmethod
     def parse_price(value: str) -> float:
-        return float(re.sub(r"^\$", "", value))
+        return float(re.sub(r"\$", "", value))
 
     def parse(self, file: TextIO):
         soup = BeautifulSoup(file, "html.parser")
@@ -35,6 +35,15 @@ class ReceiptParser:
             self.__get_receipt_item(item_element)
             for item_element in soup.find_all(class_="item-row item-delivered")
         ]
+        refunds = list(
+            filter(
+                lambda x: x.cost < 0,
+                [
+                    self.__get_receipt_item(item_element)
+                    for item_element in soup.find_all(class_="item-row item-refunded")
+                ],
+            )
+        )
         charges = self.__get_charges(soup.find(class_="charges"))
         receipt = Receipt(
             store=store,
@@ -43,7 +52,7 @@ class ReceiptParser:
             tax=charges.tax,
             tip=charges.tip,
             service_fee=charges.fee,
-            refunds=[],  # TODO: Parse refunds
+            refunds=refunds,
         )
         if receipt.total != receipt.total:
             raise ValueError(
@@ -73,17 +82,18 @@ class ReceiptParser:
             ),
         )
 
-    CHARGES_KEYS_ORDERING = ["subtotal", "tax", "tip", "fee", "total"]
+    CHARGE_KEYS = ["subtotal", "tax", "tip", "fee", "total"]
 
     def __get_charges(self, charges_element) -> Charges:
         charges = {}
         charges_rows = charges_element.find_all("tr")
-        for row, charge_key in zip(charges_rows, self.CHARGES_KEYS_ORDERING):
+        for row in charges_rows:
             charge_type = row.find(class_="charge-type").get_text().lower()
-            if charge_key not in charge_type:
-                raise ValueError(
-                    f"Possible charges ordering change. Expected charge type containing {charge_key}. Found {charge_type}"
-                )
+            charge_key = next(
+                (key for key in self.CHARGE_KEYS if key in charge_type), None
+            )
+            if charge_key is None:
+                continue
             charges[charge_key] = ReceiptParser.parse_price(
                 row.find(class_="amount").get_text()
             )

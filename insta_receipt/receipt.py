@@ -12,7 +12,7 @@ class Receipt:
     tax: float
     tip: float
     service_fee: float
-    refunds: [float]
+    refunds: [ReceiptItem]
 
     @property
     def subtotal(self) -> float:
@@ -20,7 +20,7 @@ class Receipt:
 
     @property
     def total_refunds(self) -> float:
-        return sum(self.refunds)
+        return sum([item.cost for item in self.refunds])
 
     @property
     def total(self) -> float:
