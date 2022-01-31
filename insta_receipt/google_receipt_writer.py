@@ -24,10 +24,9 @@ class GoogleReceiptWriter:
             Spreadsheet(
                 sheets=[
                     self.__build_items_sheet(template_sheets[0], receipt.items),
-                    self.__build_refunds_sheet(template_sheets[1], receipt.refunds),
-                    self.__build_charges_sheet(template_sheets[2], receipt),
+                    self.__build_charges_sheet(template_sheets[1], receipt),
                 ]
-                + template_sheets[3:],
+                + template_sheets[2:],
                 properties=SpreadsheetProperties(
                     title=f"InstaReceipt: {receipt.store} {receipt.order_placed.date().isoformat()}"
                 ),
@@ -38,19 +37,13 @@ class GoogleReceiptWriter:
         rows = [["Item", "Cost", "Person"]] + [[item.name, item.cost] for item in items]
         return Sheet(properties=template["properties"], data=GridData.from_list(rows))
 
-    def __build_refunds_sheet(self, template: Sheet, refunds: [float]) -> Sheet:
-        rows = [["Item", "Refund", "Person"]] + [
-            [item.name, item.cost, ""] for item in refunds
-        ]
-        return Sheet(properties=template["properties"], data=GridData.from_list(rows))
-
     def __build_charges_sheet(self, template: Sheet, receipt: Receipt) -> Sheet:
         rows = [
-            ["Subtotal", receipt.subtotal],
+            ["Subtotal", receipt.effective_subtotal],
             ["Tax", receipt.tax],
             ["Tip", receipt.tip],
             ["Service Fee", receipt.service_fee],
-            ["Total Refunds", receipt.total_refunds],
+            ["Fee Refunds", -receipt.fee_refunds],
             ["Total", receipt.total],
         ]
         return Sheet(properties=template["properties"], data=GridData.from_list(rows))

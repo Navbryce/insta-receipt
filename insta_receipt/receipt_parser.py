@@ -1,10 +1,9 @@
-import dataclasses
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import TextIO
 
 from bs4 import BeautifulSoup
-import re
 
 from insta_receipt.receipt import Receipt
 from insta_receipt.receipt_item import ReceiptItem
@@ -26,14 +25,15 @@ class ReceiptParser:
 
     @staticmethod
     def parse_price(value: str) -> float:
+        print(value)
         return float(re.sub(r"\$", "", value))
 
     def parse(self, file: TextIO):
-        soup = BeautifulSoup(file, "html.parser")
+        soup = BeautifulSoup(file, "html5lib")
         store, order_placed = self.__get_store_and_time(soup)
         items = [
             self.__get_receipt_item(item_element)
-            for item_element in soup.find_all(class_="item-row item-delivered")
+            for item_element in soup.find_all(class_=["item-delivered"])
         ]
         refunds = list(
             filter(
@@ -51,6 +51,7 @@ class ReceiptParser:
             items=items,
             tax=charges.tax,
             tip=charges.tip,
+            subtotal=charges.subtotal,
             service_fee=charges.fee,
             refunds=refunds,
         )
@@ -78,7 +79,7 @@ class ReceiptParser:
         return ReceiptItem(
             name=name,
             cost=ReceiptParser.parse_price(
-                item_element.find(class_="total").get_text()
+                item_element.find_all(class_="total")[-1].get_text()
             ),
         )
 

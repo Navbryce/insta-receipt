@@ -46,7 +46,7 @@ def __clean_up_data(data: [GridData]) -> [GridData]:
 
 def __is_empty_row(row: RowData) -> bool:
     for value in row["values"]:
-        if "effectiveValue" in value:
+        if "userEnteredValue" in value:
             return False
     return True
 
