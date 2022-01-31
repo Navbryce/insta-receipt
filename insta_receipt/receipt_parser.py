@@ -25,7 +25,6 @@ class ReceiptParser:
 
     @staticmethod
     def parse_price(value: str) -> float:
-        print(value)
         return float(re.sub(r"\$", "", value))
 
     def parse(self, file: TextIO):
