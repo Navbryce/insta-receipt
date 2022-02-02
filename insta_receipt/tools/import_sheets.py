@@ -1,9 +1,10 @@
 import json
+import pathlib
 import sys
 
 from insta_receipt.google_sheets import service, Sheet, GridData, RowData
 
-TEMPLATE_PATH = "sheet_templates.json"  # TEMPLATE_PATH points to the fixed templates
+TEMPLATE_PATH = "sheet_templates.json"  # TEMPLATE_PATH points to the fixed templates relative to root package
 
 __SPREAD_SHEET_ID = "1LasEqoEVF2uq4dBC9oAbNjdHfL2h0bqSt2TdvTzVxUQ"
 __TEMPLATE_SHEET_NAMES = ["Payments", "_ItemsMeta", "_RefundsMeta"]
@@ -20,9 +21,12 @@ def main():
         .get(spreadsheetId=__SPREAD_SHEET_ID, fields=__FIELDS_FOR_TEMPLATE)
     )
     sheets = [__clean_sheet(sheet) for sheet in request.execute()["sheets"]]
-    with open(TEMPLATE_PATH, "w") as f:
+    path_to_write = (
+        pathlib.Path(__file__).parent.joinpath("..", TEMPLATE_PATH).resolve()
+    )
+    with open(path_to_write, "w") as f:
         json.dump(sheets, f)
-    print(f"Wrote templates to {TEMPLATE_PATH}")
+    print(f"Wrote templates to {path_to_write}")
 
 
 def __clean_sheet(sheet: Sheet) -> Sheet:

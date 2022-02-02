@@ -1,4 +1,6 @@
+import importlib
 import json
+import pkgutil
 
 from insta_receipt.google_sheets import (
     Spreadsheet,
@@ -46,5 +48,4 @@ class GoogleSpreadSheetGenerator:
 
     def __load_template_sheets(self, template_path) -> [Sheet]:
         # TODO: Technically return type is wrong here. Maybe fix in the future
-        with open(template_path, "r") as f:
-            return json.load(f)
+        return json.loads(pkgutil.get_data(__name__, template_path))
