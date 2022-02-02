@@ -1,5 +1,6 @@
 import dataclasses
 import json
+from typing import Dict
 
 from insta_receipt import TEMPLATE_PATH
 from insta_receipt.google_sheets import (
@@ -12,15 +13,14 @@ from insta_receipt.receipt import Receipt
 from insta_receipt.receipt_item import ReceiptItem
 
 
-class GoogleReceiptWriter:
-    def __init__(self, spreadsheets_service):
-        self.spreadssheets_service = spreadsheets_service
+class GoogleSpreadSheetGenerator:
+    def __init__(self):
         pass
 
-    def write_receipt(self, receipt: Receipt) -> str:
+    def generate_spreadsheet(self, receipt: Receipt) -> Spreadsheet:
         # TODO: Fix protected ranges for templates
         template_sheets = self.__load_template_sheets(TEMPLATE_PATH)
-        return self.__write_spreadsheet(
+        return dataclasses.asdict(
             Spreadsheet(
                 sheets=[
                     self.__build_items_sheet(template_sheets[0], receipt.items),
@@ -52,9 +52,3 @@ class GoogleReceiptWriter:
         # TODO: Technically return type is wrong here. Maybe fix in the future
         with open(template_path, "r") as f:
             return json.load(f)
-
-    def __write_spreadsheet(self, spreadsheet: Spreadsheet) -> str:
-        res = self.spreadssheets_service.create(
-            body=dataclasses.asdict(spreadsheet),
-        ).execute()
-        return res["spreadsheetUrl"]

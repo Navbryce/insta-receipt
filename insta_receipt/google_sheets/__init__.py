@@ -1,6 +1,8 @@
 from __future__ import annotations
+
+import dataclasses
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 
 
 @dataclass
@@ -70,3 +72,6 @@ class SpreadsheetProperties:
 class Spreadsheet:
     sheets: [Sheet]
     properties: SpreadsheetProperties
+
+    def __getstate__(self) -> Dict:
+        return dataclasses.asdict(self)
