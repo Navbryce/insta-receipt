@@ -20,17 +20,15 @@ class GoogleSpreadSheetGenerator:
     def generate_spreadsheet(self, receipt: Receipt) -> Spreadsheet:
         # TODO: Fix protected ranges for templates
         template_sheets = self.__load_template_sheets(TEMPLATE_PATH)
-        return dataclasses.asdict(
-            Spreadsheet(
-                sheets=[
-                    self.__build_items_sheet(template_sheets[0], receipt.items),
-                    self.__build_charges_sheet(template_sheets[1], receipt),
-                ]
-                + template_sheets[2:],
-                properties=SpreadsheetProperties(
-                    title=f"InstaReceipt: {receipt.store} {receipt.order_placed.date().isoformat()}"
-                ),
-            )
+        return Spreadsheet(
+            sheets=[
+                self.__build_items_sheet(template_sheets[0], receipt.items),
+                self.__build_charges_sheet(template_sheets[1], receipt),
+            ]
+            + template_sheets[2:],
+            properties=SpreadsheetProperties(
+                title=f"InstaReceipt: {receipt.store} {receipt.order_placed.date().isoformat()}"
+            ),
         )
 
     def __build_items_sheet(self, template: Sheet, items: [ReceiptItem]) -> Sheet:

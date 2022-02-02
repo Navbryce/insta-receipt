@@ -15,7 +15,11 @@ def main():
     res = (
         service.get_sheets_service()
         .spreadsheets()
-        .create(body=GoogleSpreadSheetGenerator().generate_spreadsheet(receipt))
+        .create(
+            body=GoogleSpreadSheetGenerator()
+            .generate_spreadsheet(receipt)
+            .to_serializable()
+        )
         .execute()
     )
     print(res["spreadsheetUrl"])

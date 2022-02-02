@@ -73,5 +73,5 @@ class Spreadsheet:
     sheets: [Sheet]
     properties: SpreadsheetProperties
 
-    def __getstate__(self) -> Dict:
+    def to_serializable(self) -> Dict:
         return dataclasses.asdict(self)
