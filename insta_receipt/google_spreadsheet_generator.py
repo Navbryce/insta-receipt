@@ -1,8 +1,5 @@
-import dataclasses
 import json
-from typing import Dict
 
-from insta_receipt import TEMPLATE_PATH
 from insta_receipt.google_sheets import (
     Spreadsheet,
     GridData,
@@ -11,6 +8,7 @@ from insta_receipt.google_sheets import (
 )
 from insta_receipt.receipt import Receipt
 from insta_receipt.receipt_item import ReceiptItem
+from insta_receipt.tools.import_sheets import TEMPLATE_PATH
 
 
 class GoogleSpreadSheetGenerator:
