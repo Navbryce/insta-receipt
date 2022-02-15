@@ -7,21 +7,33 @@ from typing import Optional, Union, Dict
 
 @dataclass
 class ExtendedValue:
+    formulaValue: Optional[str] = None
     numberValue: Optional[float] = None
     stringValue: Optional[str] = None
 
+@dataclass
+class NumberFormat:
+    pattern: str
+    type: str = "NUMBER"
+
+@dataclass
+class CellFormat:
+    numberFormat: Optional[NumberFormat] = None
 
 @dataclass
 class CellData:
     @staticmethod
-    def from_value(value: Union[str, float]) -> CellData:
+    def from_value(value: Union[str, float, ExtendedValue]) -> CellData:
         if isinstance(value, str):
             return CellData(ExtendedValue(stringValue=value))
         if isinstance(value, (float, int)):
             return CellData(ExtendedValue(numberValue=value))
+        if isinstance(value, ExtendedValue):
+            return CellData(value)
         raise ValueError(f"Unsupported type {type(value)}")
 
     userEnteredValue: ExtendedValue
+    userEnteredFormat: Optional[CellFormat] = None
 
 
 CellTypes = Union[CellData, str, float]

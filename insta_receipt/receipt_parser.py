@@ -73,14 +73,26 @@ class ReceiptParser:
 
     def __get_receipt_item(self, item_element) -> ReceiptItem:
         name = item_element.find(class_="item-name")
-        name.find(class_="muted").extract()
+        cost = ReceiptParser.parse_price(
+            item_element.find_all(class_="total")[-1].get_text()
+        )
+        if cost == 0.:
+            return ReceiptItem(name=name, cost=cost, unit_price=0, quantity=0)
+        unit_price, quantity = self.__get_unit_price_and_quantity(name.find(class_="muted").extract())
         name = ReceiptParser.remove_all_new_lines(name.get_text())
         return ReceiptItem(
             name=name,
-            cost=ReceiptParser.parse_price(
-                item_element.find_all(class_="total")[-1].get_text()
-            ),
+            cost=cost,
+            unit_price=cost / quantity, # the receipt cost has been rounded, so the unit price needs to be updated
+            quantity=quantity
         )
+    def __get_unit_price_and_quantity(self, element) -> [float, float]:
+        quantity_haystack, unit_price_str = element.get_text().split("x")
+        last_quantity_line = quantity_haystack.split("\n")[-1]
+        quantity = float(last_quantity_line.strip().split(" ")[0])
+        return ReceiptParser.parse_price(unit_price_str), quantity
+
+
 
     CHARGE_KEYS = ["subtotal", "tax", "tip", "fee", "total"]
 

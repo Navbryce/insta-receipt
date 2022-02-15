@@ -1,12 +1,15 @@
-import importlib
 import json
 import pkgutil
 
 from insta_receipt.google_sheets import (
+    ExtendedValue,
+    CellData,
+    CellFormat,
+    NumberFormat,
     Spreadsheet,
     GridData,
     Sheet,
-    SpreadsheetProperties,
+    SpreadsheetProperties
 )
 from insta_receipt.receipt import Receipt
 from insta_receipt.receipt_item import ReceiptItem
@@ -22,17 +25,20 @@ class GoogleSpreadSheetGenerator:
         template_sheets = self.__load_template_sheets(TEMPLATE_PATH)
         return Spreadsheet(
             sheets=[
-                self.__build_items_sheet(template_sheets[0], receipt.items),
-                self.__build_charges_sheet(template_sheets[1], receipt),
-            ]
-            + template_sheets[2:],
+                       self.__build_items_sheet(template_sheets[0], receipt.items),
+                       self.__build_charges_sheet(template_sheets[1], receipt),
+                   ]
+                   + template_sheets[2:],
             properties=SpreadsheetProperties(
                 title=f"InstaReceipt: {receipt.store} {receipt.order_placed.date().isoformat()}"
             ),
         )
 
     def __build_items_sheet(self, template: Sheet, items: [ReceiptItem]) -> Sheet:
-        rows = [["Item", "Cost", "Person"]] + [[item.name, item.cost] for item in items]
+        rows = [["Item", "PPU", "Quantity", "Cost", "Person"]] + [
+            [item.name, CellData(ExtendedValue(numberValue=item.unit_price), CellFormat(NumberFormat("0.00"))),
+             item.quantity] for item in items]
+        rows[1].append(ExtendedValue(formulaValue="=ARRAYFORMULA(IF(NOT(ISBLANK(A2:A)), B2:B * C2:C, \"\"))"))
         return Sheet(properties=template["properties"], data=GridData.from_list(rows))
 
     def __build_charges_sheet(self, template: Sheet, receipt: Receipt) -> Sheet:
