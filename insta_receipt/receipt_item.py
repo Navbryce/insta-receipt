@@ -6,4 +6,4 @@ class ReceiptItem:
     name: str
     cost: float
     unit_price: float
-    quantity: int
+    quantity: float

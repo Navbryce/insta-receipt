@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "insta-receipt"
-version = "0.1.7"
+version = "0.1.8"
 description = "For parsing receipts"
 authors = ["Navbryce <plunkett.bryce.m@gmail.com>"]
 

@@ -78,7 +78,10 @@ class ReceiptParser:
         )
         if cost == 0.:
             return ReceiptItem(name=name, cost=cost, unit_price=0, quantity=0)
-        unit_price, quantity = self.__get_unit_price_and_quantity(name.find(class_="muted").extract())
+        if cost < 0:
+            # TODO: Add quantity parsing to refunded items ("says refund"). Maybe should be a separate model/class since refund is post tax
+            return ReceiptItem(name=name, cost=cost, unit_price=cost, quantity=1)
+        _, quantity = self.__get_unit_price_and_quantity(name.find(class_="muted").extract())
         name = ReceiptParser.remove_all_new_lines(name.get_text())
         return ReceiptItem(
             name=name,
